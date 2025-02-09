@@ -10,6 +10,32 @@ function! agit#view#log#new(git)
   return log
 endfunction
 
+function! agit#view#log#enable_auto_show_commit()
+  let s:save_ut = &updatetime
+  augroup agit-auto-show-commit
+    autocmd CursorMoved <buffer> call s:wait_for_show_commit()
+    autocmd CursorHold <buffer> call s:show_commit()
+    autocmd BufLeave <buffer> call s:cleanup()
+  augroup END
+endfunction
+
+function! agit#view#log#disable_auto_show_commit()
+  augroup agit-auto-show-commit
+    autocmd!
+  augroup END
+  let g:agit_enable_auto_show_commit = 0
+endfunction
+
+function! agit#view#log#toggle_auto_show_commit()
+  if g:agit_enable_auto_show_commit
+    call agit#view#log#disable_auto_show_commit()
+    let g:agit_enable_auto_show_commit = 0
+  else
+    call agit#view#log#enable_auto_show_commit()
+    let g:agit_enable_auto_show_commit = 1
+  endif
+endfunction
+
 function! s:fill_buffer(str)
   setlocal modifiable
   noautocmd silent! %delete _
@@ -51,6 +77,9 @@ function! s:log.renderwith(funcname)
   endif
 endfunction
 
+function! s:cleanup()
+  let &updatetime = s:save_ut
+endfunction
 function! s:log.setlocal()
   call agit#bufwin#move_to(self.name)
   silent file `='[Agit log] ' . self.git.seq`
@@ -93,11 +122,6 @@ function! s:log.setlocal()
 
   augroup agit
 
-    let s:save_ut = &updatetime
-    autocmd CursorMoved <buffer> if g:agit_enable_auto_show_commit | call s:wait_for_show_commit() | endif
-    autocmd CursorHold <buffer> if g:agit_enable_auto_show_commit | call s:show_commit() | endif
-    autocmd BufLeave <buffer> if g:agit_enable_auto_show_commit | call s:cleanup() | endif
-
     autocmd BufEnter <buffer> if g:agit_enable_auto_refresh | call agit#reload() | endif
     if exists('##VimResized')
       autocmd VimResized <buffer> if g:agit_enable_auto_refresh | call agit#reload() | endif
@@ -109,6 +133,9 @@ function! s:log.setlocal()
     autocmd CursorMoved <buffer> if g:agit_skip_empty_line | call s:skip_empty_line() | endif
 
   augroup END
+  if g:agit_enable_auto_show_commit
+    call agit#view#log#enable_auto_show_commit()
+  endif
 
   function! s:wait_for_show_commit()
     set updatetime=100
@@ -119,10 +146,6 @@ function! s:log.setlocal()
     if s:emmit(0)
       redraw!
     endif
-  endfunction
-
-  function! s:cleanup()
-    let &updatetime = s:save_ut
   endfunction
 
   function! s:skip_empty_line()
