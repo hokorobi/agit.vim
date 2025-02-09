@@ -6,39 +6,17 @@ let g:loaded_agit = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-if !exists('g:agit_no_default_mappings')
-  let g:agit_no_default_mappings = 0
-endif
-if !exists('g:agit_enable_auto_show_commit')
-  let g:agit_enable_auto_show_commit = 1
-endif
-if !exists('g:agit_enable_auto_refresh')
-  let g:agit_enable_auto_refresh = 0
-endif
-if !exists('g:agit_max_log_lines')
-  let g:agit_max_log_lines = 500
-endif
-if !exists('g:agit_max_author_name_width')
-  let g:agit_max_author_name_width = 0
-endif
-if !exists('g:agit_skip_empty_line')
-  let g:agit_skip_empty_line = 1
-endif
-if !exists('g:agit_localchanges_always_on_top')
-  let g:agit_localchanges_always_on_top = 1
-endif
-if !exists('g:agit_ignore_spaces')
-    let g:agit_ignore_spaces = 1
-endif
-if !exists('g:agit_log_width')
-    let g:agit_log_width = 0
-endif
-if !exists('g:agit_stat_width')
-    let g:agit_stat_width = 80
-endif
-if !exists('g:agit_reuse_tab')
-    let g:agit_reuse_tab = 1
-endif
+let g:agit_no_default_mappings = get(g:, 'agit_no_default_mappings', 0)
+let g:agit_enable_auto_show_commit = get(g:, 'agit_enable_auto_show_commit', 1)
+let g:agit_enable_auto_refresh = get(g:, 'agit_enable_auto_refresh', 0)
+let g:agit_max_log_lines = get(g:, 'agit_max_log_lines', 500)
+let g:agit_max_author_name_width = get(g:, 'agit_max_author_name_width', 0)
+let g:agit_skip_empty_line = get(g:, 'agit_skip_empty_line', 1)
+let g:agit_localchanges_always_on_top = get(g:, 'agit_localchanges_always_on_top', 1)
+let g:agit_ignore_spaces = get(g:, 'agit_ignore_spaces', 1)
+let g:agit_log_width = get(g:, 'agit_log_width', 0)
+let g:agit_stat_width = get(g:, 'agit_stat_width', 80)
+let g:agit_reuse_tab = get(g:, 'agit_reuse_tab', 1)
 
 nnoremap <silent> <Plug>(agit-reload)  :<C-u>call agit#reload()<CR>
 nnoremap <silent> <Plug>(agit-scrolldown-stat) :<C-u>call agit#remote_scroll('stat', 'down')<CR>
