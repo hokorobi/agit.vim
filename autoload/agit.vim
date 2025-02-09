@@ -1,7 +1,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:V = vital#of('agit')
+let s:V = vital#agit#new()
 let s:P = s:V.import('Prelude')
 let s:String = s:V.import('Data.String')
 let s:List = s:V.import('Data.List')
