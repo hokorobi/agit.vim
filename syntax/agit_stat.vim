@@ -16,4 +16,4 @@ hi def link agitStatMessage Title
 hi def link agitUntrackedTitle Structure
 hi def link agitUntrackedFile Constant
 
-let b:current_syntax = "agit_stat"
+let b:current_syntax = "agit-stat"

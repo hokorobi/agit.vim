@@ -32,4 +32,4 @@ hi def link agitDiffIndex Comment
 hi def link agitDiffLine Comment
 hi def link agitDiffSubname PreProc
 
-let b:current_syntax = "agit_diff"
+let b:current_syntax = "agit-diff"

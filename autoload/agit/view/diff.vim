@@ -48,5 +48,5 @@ function! s:diff.setlocal()
   endif
 
 
-  set filetype=agit_diff
+  set filetype=agit-diff
 endfunction
