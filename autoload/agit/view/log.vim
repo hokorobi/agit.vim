@@ -23,16 +23,13 @@ function! agit#view#log#disable_auto_show_commit()
   augroup agit-auto-show-commit
     autocmd!
   augroup END
-  let g:agit_enable_auto_show_commit = 0
 endfunction
 
 function! agit#view#log#toggle_auto_show_commit()
-  if g:agit_enable_auto_show_commit
+  if exists('#agit-auto-show-commit#CursorMoved')
     call agit#view#log#disable_auto_show_commit()
-    let g:agit_enable_auto_show_commit = 0
   else
     call agit#view#log#enable_auto_show_commit()
-    let g:agit_enable_auto_show_commit = 1
   endif
 endfunction
 
