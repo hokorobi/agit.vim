@@ -30,12 +30,18 @@ nnoremap <silent> <Plug>(agit-print-commitmsg) :<C-u>call agit#print_commitmsg()
 nnoremap <silent> <Plug>(agit-diff) :<C-u>AgitDiff<CR>
 nnoremap <silent> <Plug>(agit-diff-with-local) :<C-u>AgitDiff <hash><CR>
 
+nnoremap <silent> <Plug>(agit-git-switch)       :<C-u>AgitGit switch <branch><CR>
+nnoremap <silent> <Plug>(agit-git-switch-b)     :<C-u>AgitGit switch -c \%# <hash><CR>
 nnoremap <silent> <Plug>(agit-git-checkout)     :<C-u>AgitGit checkout <branch><CR>
 nnoremap <silent> <Plug>(agit-git-checkout-b)   :<C-u>AgitGit checkout -b \%# <hash><CR>
 nnoremap <silent> <Plug>(agit-git-branch-d)     :<C-u>AgitGitConfirm branch -d <branch><CR>
 nnoremap <silent> <Plug>(agit-git-reset-soft)   :<C-u>AgitGitConfirm reset --soft <hash><CR>
 nnoremap <silent> <Plug>(agit-git-reset)        :<C-u>AgitGitConfirm reset <hash><CR>
 nnoremap <silent> <Plug>(agit-git-reset-hard)   :<C-u>AgitGitConfirm reset --hard <hash><CR>
+nnoremap <silent> <Plug>(agit-git-restore)      :<C-u>AgitGitConfirm restore .<CR>
+nnoremap <silent> <Plug>(agit-git-restore-s)    :<C-u>AgitGitConfirm restore --staged .<CR>
+nnoremap <silent> <Plug>(agit-git-restore-s-w)  :<C-u>AgitGitConfirm restore --staged --worktree .<CR>
+nnoremap <silent> <Plug>(agit-git-restore-source)    :<C-u>AgitGitConfirm restore --source=<hash> .<CR>
 nnoremap <silent> <Plug>(agit-git-rebase)       :<C-u>AgitGitConfirm rebase <hash><CR>
 nnoremap <silent> <Plug>(agit-git-rebase-i)     :<C-u>AgitGitConfirm! rebase --interactive <hash><CR>
 nnoremap <silent> <Plug>(agit-git-bisect-start) :<C-u>AgitGit bisect start HEAD <hash> \%#<CR>
