@@ -45,6 +45,7 @@ nnoremap <silent> <Plug>(agit-git-bisect-reset) :<C-u>AgitGit bisect reset<CR>
 nnoremap <silent> <Plug>(agit-git-cherry-pick)  :<C-u>AgitGit cherry-pick <hash><CR>
 nnoremap <silent> <Plug>(agit-git-revert)       :<C-u>AgitGit revert <hash><CR>
 nnoremap <silent> <Plug>(agit-exit)             :<C-u>call agit#exit()<CR>
+nnoremap <silent> <Plug>(agit-git-fixup)        :<C-u>call agit#view#log#fixup()<CR>
 
 nnoremap <silent> <Plug>(toggle-auto-show-commit) :<C-u>call agit#view#log#toggle_auto_show_commit()<CR>
 

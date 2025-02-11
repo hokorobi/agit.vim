@@ -36,6 +36,11 @@ function! agit#view#log#toggle_auto_show_commit()
   endif
 endfunction
 
+function! agit#view#log#fixup()
+  call agit#agitgit("commit --fixup <hash>", 0, 0)
+  call agit#agitgit("rebase --interactive --autosquash <hash>~", 0, 1)
+endfunction
+
 function! s:fill_buffer(str)
   setlocal modifiable
   noautocmd silent! %delete _
