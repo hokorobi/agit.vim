@@ -31,7 +31,8 @@ nnoremap <silent> <Plug>(agit-diff) :<C-u>AgitDiff<CR>
 nnoremap <silent> <Plug>(agit-diff-with-local) :<C-u>AgitDiff <hash><CR>
 
 nnoremap <silent> <Plug>(agit-git-switch)         : <C-u>AgitGit switch <branch><CR>
-nnoremap <silent> <Plug>(agit-git-switch-b)       : <C-u>AgitGit switch -c \%# <hash><CR>
+nnoremap <silent> <Plug>(agit-git-switch-c)       : <C-u>AgitGit switch -c \%# <hash><CR>
+nnoremap <silent> <Plug>(agit-git-switch-detach)  : <C-u>AgitGit switch --detach <hash><CR>
 nnoremap <silent> <Plug>(agit-git-checkout)       : <C-u>AgitGit checkout <branch><CR>
 nnoremap <silent> <Plug>(agit-git-checkout-b)     : <C-u>AgitGit checkout -b \%# <hash><CR>
 nnoremap <silent> <Plug>(agit-git-branch-d)       : <C-u>AgitGitConfirm branch -d <branch><CR>
