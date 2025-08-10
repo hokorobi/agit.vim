@@ -25,7 +25,7 @@ syn region agitRef matchgroup=agitRefDelimiter start=" \zs(" end=")\ze " matchgr
 syn keyword agitHead HEAD contained
 syn match agitRemote /r:[^, :)]\+/ contained
 syn match agitTag /t:[^, :)]\+/ contained
-syn match agitDate /|>[a-zA-Z0-9, ]\+<|/ contained contains=agitDateMark
+syn match agitDate /|>[-0-9]\+<|/ contained contains=agitDateMark
 syn match agitAuthor /{>[^}]\+<}/ contained contains=agitAuthorMark
 syn match agitHash  /\[\x\{7,\}]/ contained conceal
 
