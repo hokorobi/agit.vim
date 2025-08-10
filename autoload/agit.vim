@@ -129,9 +129,29 @@ function! agit#remote_scroll(win_type, direction)
   call agit#bufwin#move_to(win_save)
 endfunction
 
-function! agit#yank_hash()
-  call setreg(v:register, agit#extract_hash(getline('.')))
-  echo 'yanked ' . getreg(v:register)
+function! agit#yank_hash(register = '')
+  if a:register == ''
+    let target_register = v:register
+  else
+    let target_register = a:register
+  endif
+  call setreg(target_register, agit#extract_hash(getline('.')))
+  echo 'yanked ' . getreg(target_register)
+endfunction
+
+function! agit#yank_commitmsg(register = '')
+  let hash = agit#extract_hash(getline('.'))
+  if hash != ''
+    if a:register == ''
+      let target_register = v:register
+    else
+      let target_register = a:register
+    endif
+    call setreg(target_register, t:agit_git.commitmsg(hash))
+    echo 'yanked ' . getreg(target_register)
+  else
+    echo
+  endif
 endfunction
 
 function! agit#exit()

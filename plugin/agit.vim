@@ -24,7 +24,10 @@ nnoremap <silent> <Plug>(agit-scrollup-stat)   :<C-u>call agit#remote_scroll('st
 nnoremap <silent> <Plug>(agit-scrolldown-diff) :<C-u>call agit#remote_scroll('diff', 'down')<CR>
 nnoremap <silent> <Plug>(agit-scrollup-diff)   :<C-u>call agit#remote_scroll('diff', 'up')<CR>
 
+nnoremap <silent> <PLug>(agit-yank-plus-hash) :<C-u>call agit#yank_hash('+')<CR>
 nnoremap <silent> <PLug>(agit-yank-hash) :<C-u>call agit#yank_hash()<CR>
+nnoremap <silent> <PLug>(agit-yank-plus-commitmsg) :<C-u>call agit#yank_commitmsg('+')<CR>
+nnoremap <silent> <PLug>(agit-yank-commitmsg) :<C-u>call agit#yank_commitmsg()<CR>
 nnoremap <silent> <Plug>(agit-show-commit) :<C-u>call agit#show_commit()<CR>
 nnoremap <silent> <Plug>(agit-print-commitmsg) :<C-u>call agit#print_commitmsg()<CR>
 nnoremap <silent> <Plug>(agit-diff) :<C-u>AgitDiff<CR>
