@@ -1,6 +1,6 @@
 let s:seps = [' ', ' ', '', '']
-let s:String = agit#vital().String
-let s:List = agit#vital().List
+let s:String = vital#agit#import('Data.String')
+let s:List = vital#agit#import('Data.List')
 
 " table: [[String]] 2-dimensional string list
 " max_col: Integer if a one log exceeds max_col, be trimmed.

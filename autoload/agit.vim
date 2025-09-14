@@ -1,49 +1,34 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:V = vital#agit#new()
-let s:P = s:V.import('Prelude')
-let s:String = s:V.import('Data.String')
-let s:List = s:V.import('Data.List')
-let s:Process = s:V.import('Process')
-let s:OptionParser = s:V.import('OptionParser')
+let s:String = vital#agit#import('Data.String')
+let s:List = vital#agit#import('Data.List')
+let s:OptionParser = vital#agit#import('OptionParser')
+let s:Job = vital#agit#import('System.Job')
 
-let s:agit_vital = {
-\ 'V' : s:V,
-\ 'P' : s:P,
-\ 'String' : s:String,
-\ 'List' : s:List,
-\ 'Process' : s:Process,
-\ 'OptionParser' : s:OptionParser,
-\ }
-
-let s:agit_preset_views = get(g:, 'agit_preset_views', {
-\ 'default': [
-\   {'name': 'log'},
-\   {'name': 'stat',
-\    'layout': 'botright vnew'},
-\   {'name': 'diff',
-\    'layout': 'belowright {winheight(".") * 3 / 4}new'}
+let s:agit_preset_views = get(g:, 'agit_preset_views', #{
+\ default: [
+\   #{name: 'log'},
+\   #{name: 'stat',
+\    layout: 'botright vnew'},
+\   #{name: 'diff',
+\    layout: 'belowright {winheight(".") * 3 / 4}new'}
 \ ],
-\ 'file': [
-\   {'name': 'filelog'},
-\   {'name': 'catfile',
-\    'layout': 'botright vnew'},
+\ file: [
+\   #{name: 'filelog'},
+\   #{name: 'catfile',
+\    layout: 'botright vnew'},
 \ ]})
 let s:fugitive_enabled = get(g:, 'loaded_fugitive', 0)
 
 let s:parser = s:OptionParser.new()
 call s:parser.on('--dir=VALUE', 'Launch Agit on the specified directory instead of the buffer direcotry.',
-\ {'completion' : 'file', 'default': ''})
+\ #{completion : 'file', default: ''})
 call s:parser.on('--file=VALUE', 'Specify file name traced by Agit file. (Available on Agit file)',
-\ {'completion' : 'file', 'default': '%'})
+\ #{completion : 'file', default: '%'})
 
 function! agit#complete_command(arglead, cmdline, cursorpos)
   return s:parser.complete_greedily(a:arglead, a:cmdline, a:cursorpos)
-endfunction
-
-function! agit#vital()
-  return s:agit_vital
 endfunction
 
 function! agit#launch(args)
@@ -209,6 +194,28 @@ function! agit#diff(args) abort
   endtry
 endfunction
 
+function! s:on_stdout(data) abort dict
+  " Remove trailing CRs
+  call map(a:data, 'v:val[-1:] ==# "\r" ? v:val[:-2] : v:val')
+  let self.stdout[-1] .= a:data[0]
+  call extend(self.stdout, a:data[1:])
+endfunction
+function! s:on_stderr(data) abort dict
+  let self.stderr[-1] .= a:data[0]
+  call extend(self.stderr, a:data[1:])
+endfunction
+function s:get_git_toplevel() abort
+  let job = s:Job.start(['git', '--no-pager', 'rev-parse', '--show-toplevel'], #{
+        \ stdout: [''],
+        \ stderr: [''],
+        \ on_stdout: function('s:on_stdout'),
+        \ on_stderr: function('s:on_stderr'),
+        \})
+  return #{
+        \ has_error: job.wait() != 0,
+        \ toplevel_path: join(job.stdout, '')
+        \}
+endfunction
 function s:get_git_root(basedir)
   if empty(a:basedir)
     " if fugitive exists
@@ -223,18 +230,12 @@ function s:get_git_root(basedir)
   let cdcmd = haslocaldir() ? 'lcd ' : 'cd '
   let cwd = getcwd()
   execute cdcmd . current_path
-  if s:Process.has_vimproc()
-    let toplevel_path = vimproc#system('git --no-pager rev-parse --show-toplevel')
-    let has_error = vimproc#get_last_status() != 0
-  else
-    let toplevel_path = system('git --no-pager rev-parse --show-toplevel')
-    let has_error = v:shell_error != 0
-  endif
+  let ret = s:get_git_toplevel()
   execute cdcmd . cwd
-  if has_error
+  if ret.has_error
     throw 'Agit: Not a git repository.'
   endif
-  return s:String.chomp(toplevel_path)
+  return s:String.chomp(ret.toplevel_path)
 endfunction
 
 function! s:get_git_dir(basedir)
@@ -251,18 +252,12 @@ function! s:get_git_dir(basedir)
   let cdcmd = haslocaldir() ? 'lcd ' : 'cd '
   let cwd = getcwd()
   execute cdcmd . current_path
-  if s:Process.has_vimproc()
-    let toplevel_path = vimproc#system('git --no-pager rev-parse --show-toplevel')
-    let has_error = vimproc#get_last_status() != 0
-  else
-    let toplevel_path = system('git --no-pager rev-parse --show-toplevel')
-    let has_error = v:shell_error != 0
-  endif
+  let ret = s:get_git_toplevel()
   execute cdcmd . cwd
-  if has_error
+  if ret.has_error
     throw 'Agit: Not a git repository.'
   endif
-  return s:String.chomp(toplevel_path) . '/.git'
+  return s:String.chomp(ret.toplevel_path) . '/.git'
 endfunction
 
 function! agit#extract_hash(str)

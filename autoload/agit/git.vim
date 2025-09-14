@@ -1,7 +1,6 @@
-let s:P = agit#vital().P
-let s:String = agit#vital().String
-let s:List = agit#vital().List
-let s:Process = agit#vital().Process
+let s:String = vital#agit#import('Data.String')
+let s:List = vital#agit#import('Data.List')
+let s:Job = vital#agit#import('System.Job')
 
 let s:sep = '__SEP__'
 
@@ -9,23 +8,23 @@ let g:agit#git#staged_message = '+  Local changes checked in to index but not co
 let g:agit#git#unstaged_message = '=  Local uncommitted changes, not checked in to index'
 let g:agit#git#nextpage_message = '(too many logs)'
 
-let s:git = {
-\ 'git_root' : '',
-\ 'filepath': '',
-\ 'hash': '',
-\ 'oninit': [],
-\ 'onhashchange': [],
-\ 'staged' : {
-\   'stat' : '',
-\   'diff' : '',
-\   'line' : 0,
+let s:git = #{
+\ git_root : '',
+\ filepath: '',
+\ hash: '',
+\ oninit: [],
+\ onhashchange: [],
+\ staged : #{
+\   stat : '',
+\   diff : '',
+\   line : 0,
 \ },
-\ 'unstaged' : {
-\   'stat' : '',
-\   'diff' : '',
-\   'line' : 0,
+\ unstaged : #{
+\   stat : '',
+\   diff : '',
+\   line : 0,
 \ },
-\ 'head' : '',
+\ head : '',
 \ }
 
 function! s:git.relpath() abort
@@ -103,7 +102,7 @@ function! s:git._localchanges(cached, filepath) dict
   if !empty(a:filepath)
     let opts .= ' -- "' . a:filepath . '"'
   endif
-  let ret = {'line' : 0}
+  let ret = #{line : 0}
   let ret.stat = agit#git#exec('diff --stat=' . g:agit_stat_width . opts, self.git_root)
   let ret.diff = agit#git#exec('diff -p' . opts, self.git_root)
   return ret
@@ -195,7 +194,7 @@ endfunction
 
 let s:seq = ''
 function! agit#git#new(git_root)
-  let git = extend(deepcopy(s:git), {'git_root' : a:git_root, 'seq': s:seq})
+  let git = extend(deepcopy(s:git), #{git_root : a:git_root, seq: s:seq})
   let s:seq += 1
   return git
 endfunction
@@ -203,23 +202,46 @@ endfunction
 " Utilities
 let s:last_status = 0
 let s:is_cp932 = &enc == 'cp932'
+function! s:on_stdout(data) abort dict
+  " Remove trailing CRs
+  call map(a:data, 'v:val[-1:] ==# "\r" ? v:val[:-2] : v:val')
+  let self.stdout[-1] .= a:data[0]
+  call extend(self.stdout, a:data[1:])
+endfunction
+function! s:on_stderr(data) abort dict
+  let self.stderr[-1] .= a:data[0]
+  call extend(self.stderr, a:data[1:])
+endfunction
+function! s:get_git_command_list(git_cmd_prefix, cmd) abort
+  let sanitized_str = substitute(a:cmd, '"\([^"]\+\)"', '\=substitute(submatch(1), " ", "<sp>", "g")', "g")
+  let command_list = split(sanitized_str)
+  for i in len(command_list)->range()
+    let command_list[i] = substitute(command_list[i], '<sp>', ' ', 'g')
+  endfor
+  return extend(a:git_cmd_prefix, command_list)
+endfunction
 function! agit#git#exec(command, git_root, ...)
-  let cmd = 'git --no-pager -C "' . a:git_root . '" ' . a:command
+  let git_cmd_prefix = ['git', '--no-pager', '-C']
   if a:0 > 0 && a:1 == 1
-    execute '!' . cmd
-  else
-    if s:Process.has_vimproc()
-      let ret = vimproc#system(cmd)
-      let s:last_status = vimproc#get_last_status()
-    else
-      let ret = system(cmd)
-      let s:last_status = v:shell_error
-    endif
-    if s:is_cp932
-      let ret = iconv(ret, 'utf-8', 'cp932')
-    endif
-    return ret
+    execute $'!{join(git_cmd_prefix, ' ')} "{a:git_root}" {a:command}'
+    return
   endif
+
+  let job = s:Job.start(
+        \ s:get_git_command_list(add(git_cmd_prefix, a:git_root), a:command),
+        \ #{
+        \   stdout: [''],
+        \   stderr: [''],
+        \   on_stdout: function('s:on_stdout'),
+        \   on_stderr: function('s:on_stderr'),
+        \ })
+  let exit_status = job.wait()
+  let ret = join(job.stdout, "\n")
+  let s:last_status = exit_status
+  if s:is_cp932
+    let ret = iconv(ret, 'utf-8', 'cp932')
+  endif
+  return ret
 endfunction
 
 function! agit#git#exec_or_die(command, git_root)

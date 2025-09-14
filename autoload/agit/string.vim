@@ -1,5 +1,5 @@
-let s:String = agit#vital().String
-let s:List = agit#vital().List
+let s:String = vital#agit#import('Data.String')
+let s:List = vital#agit#import('Data.List')
 
 function! agit#string#truncate(text, max_width, ellipsis)
   let ellipsis_width = strdisplaywidth(a:ellipsis)
@@ -102,10 +102,10 @@ function! agit#string#_align_fields(log, maxs, sep, max_col)
 endfunction
 
 function! agit#string#align_column(text, format_option)
-  let default_option = {
-  \ 'width' : strdisplaywidth(a:text),
-  \ 'truncate' : 0,
-  \ 'align' : 'left'
+  let default_option = #{
+  \ width : strdisplaywidth(a:text),
+  \ truncate : 0,
+  \ align : 'left'
   \ }
   let option = extend(default_option, a:format_option)
   if option.truncate
