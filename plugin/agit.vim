@@ -48,6 +48,7 @@ nnoremap <silent> <Plug>(agit-git-restore-s-w)    : <C-u>AgitGitConfirm restore 
 nnoremap <silent> <Plug>(agit-git-restore-source) : <C-u>AgitGitConfirm restore --source=<hash> .<CR>
 nnoremap <silent> <Plug>(agit-git-rebase)         : <C-u>AgitGitConfirm rebase <hash><CR>
 nnoremap <silent> <Plug>(agit-git-rebase-i)       : <C-u>AgitGitConfirm! rebase --interactive <hash><CR>
+nnoremap <silent> <Plug>(agit-git-history-reword) : <C-u>AgitGit history reword <hash><CR>
 nnoremap <silent> <Plug>(agit-git-bisect-start)   : <C-u>AgitGit bisect start HEAD <hash> \%#<CR>
 nnoremap <silent> <Plug>(agit-git-bisect-good)    : <C-u>AgitGit bisect good<CR>
 nnoremap <silent> <Plug>(agit-git-bisect-bad)     : <C-u>AgitGit bisect bad<CR>
